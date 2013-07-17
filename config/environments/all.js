@@ -18,20 +18,6 @@ module.exports = function() {
   // Register EJS as a template engine.
   this.engine('ejs', require('ejs').__express);
 
-  // Override default template extension.  By default, Locomotive finds
-  // templates using the `name.format.engine` convention, for example
-  // `index.html.ejs`  For some template engines, such as Jade, that find
-  // layouts using a `layout.engine` notation, this results in mixed conventions
-  // that can cuase confusion.  If this occurs, you can map an explicit
-  // extension to a format.
-  /* this.format('html', { extension: '.jade' }) */
-
-  // Register formats for content negotiation.  Using content negotiation,
-  // different formats can be served as needed by different clients.  For
-  // example, a browser is sent an HTML response, while an API client is sent a
-  // JSON or XML response.
-  /* this.format('xml', { engine: 'xmlb' }); */
-
   // Use middleware.  Standard [Connect](http://www.senchalabs.org/connect/)
   // middleware is built-in, with additional [third-party](https://github.com/senchalabs/connect/wiki)
   // middleware available as separate modules.
@@ -49,6 +35,9 @@ module.exports = function() {
 
   this.use(passport.initialize());
   this.use(passport.session());
+
+  this.use(require('express-ejs-layouts'));
+  this.dynamicHelpers(require('../../lib/helpers').dynamic);
 
   this.use(this.router);
 }

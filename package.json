@@ -7,6 +7,7 @@
     "express": "3.x.x",
     "connect-powered-by": "0.1.x",
     "ejs": "0.8.x",
+    "express-ejs-layouts": ">= 0.0.0",
     "passport": ">= 0.0.0",
     "passport-google-oauth": ">= 0.0.0",
     "neo4j": ">= 0.0.0"

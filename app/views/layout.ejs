@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootswatch/2.3.2/amelia/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="brand" href="/">ingressors</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="<%= urlFor({ controller: 'pages', action: 'main' }) %>">Home</a></li>
+            </ul>
+            <p class="navbar-text pull-right">
+              <% if(!user) { %>
+                <a href="/auth/google/">Login with Google+</a>
+              <% } else { %>
+                Logged in as <strong><%= user.displayName %></strong>
+              <% } %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <%- body %>
+    </div>
+
+    <hr />
+    <footer>
+    Copyright &copy; 2013 by <a href="mailto:stesie@brokenpipe.de">Stefan Siegl</a>.
+    </footer>
+
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
