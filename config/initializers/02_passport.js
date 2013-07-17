@@ -4,9 +4,9 @@ module.exports = function() {
   var Player = require('../../app/models/player');
 
   passport.use(new GoogleStrategy({
-    clientID: '407988379787-o384bt0su735euksjo5tgs6jrfmd5397.apps.googleusercontent.com',
+    clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
     clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/callback"
+    callbackURL: process.env.GOOGLE_OAUTH_REDIRECT_URI
   }, function(accessToken, refreshToken, profile, done) {
     Player.authenticate(profile, function(err, player) {
       done(err, player);
