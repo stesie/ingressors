@@ -36,6 +36,11 @@ Object.defineProperty(Player.prototype, 'displayName', {
   set: function(displayName) { this._node.data.displayName = displayName; }
 });
 
+Object.defineProperty(Player.prototype, 'nickName', {
+  get: function() { return this._node.data.nickName; },
+  set: function(nickName) { this._node.data.nickName = nickName; }
+});
+
 Object.defineProperty(Player.prototype, 'pictureUrl', {
   get: function() { return this._node.data.pictureUrl; },
   set: function(pictureUrl) { this._node.data.pictureUrl = pictureUrl; }

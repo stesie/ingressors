@@ -2,10 +2,20 @@
 <p>... I've been worried about you.</p>
 
 <% if(user.nickName) { %>
-You've already told me, that you're playing Ingress as <em><%= user.nickName %></em>.
+  <p>
+    You've already told me, that you're playing Ingress as <em><%= user.nickName %></em>.
+  </p>
 <% } else { %>
-<h3>nickname registration</h3>
-So far you didn't reveal your nickname to me.  However this is a must have, since
-otherwise other agents won't be able to lookup your profile right here.
+  <h3>nickname registration</h3>
 
+  <p>
+    So far you didn't reveal your nickname to me.  However this is a must have, since
+    otherwise other agents won't be able to lookup your profile right here.
+  </p>
+
+  <form id="nick-registration" class="form-inline">
+    <input type="hidden" name="_csrf" value="<%= csrf %>" />
+    <input type="text" class="input-medium" name="nickname" placeholder="Nickname">
+    <button type="submit" class="btn">Submit</button>
+  </form>
 <% } %>

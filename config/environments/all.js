@@ -39,5 +39,13 @@ module.exports = function() {
   this.use(require('express-ejs-layouts'));
   this.dynamicHelpers(require('../../lib/helpers').dynamic);
 
+  this.use(express.csrf()); /*(function(req) {
+    if(!req.session.csrf_token) {
+      req.session.csrf_token = crypto.randomBytes(Math.ceil(24 * 3 / 4))
+        .toString('base64').slice(0, 24);
+    }
+    return req.session.csrf_token;
+  }));*/
+
   this.use(this.router);
 }
