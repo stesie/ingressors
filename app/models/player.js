@@ -60,6 +60,12 @@ Player.prototype.del = function(callback) {
 Player.findByProfileId = function(profileId, callback) {
   db.getIndexedNode("players", "id", profileId, function(err, res) {
     if(err || res === null) {
+      if(err && err.message.indexOf('Neo4j NotFoundException') === 0) {
+	// don't propagate NotFoundException from Neo4j, which is probably
+	// due to a not yet existing index
+	err = null;
+      }
+
       return callback(err, null);
     }
 
