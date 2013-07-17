@@ -10,6 +10,8 @@ module.exports = function routes() {
 
   this.root('pages#main');
 
+  this.match('/welcome', 'pages#welcome');
+
   this.match('/auth/google',
 	     passport.authenticate('google', {
 	       scope: [ 'https://www.googleapis.com/auth/userinfo.profile',

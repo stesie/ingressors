@@ -1,1 +1,11 @@
-<h1>Hello World</h1>
+<h1><%= user.displayName %>, welcome back!</h1>
+<p>... I've been worried about you.</p>
+
+<% if(user.nickName) { %>
+You've already told me, that you're playing Ingress as <em><%= user.nickName %></em>.
+<% } else { %>
+<h3>nickname registration</h3>
+So far you didn't reveal your nickname to me.  However this is a must have, since
+otherwise other agents won't be able to lookup your profile right here.
+
+<% } %>

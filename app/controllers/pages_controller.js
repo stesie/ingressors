@@ -4,8 +4,16 @@ var locomotive = require('locomotive')
 var PagesController = new Controller();
 
 PagesController.main = function() {
-  console.log(this.req.user ? this.req.user.displayName : 'not logged in');
-  this.title = 'Locomotive Fnord'
+  if(!this.req.user) {
+    return this.redirect('/welcome');
+  }
+
+  this.title = 'Welcome back, ingressor!';
+  this.render();
+}
+
+PagesController.welcome = function() {
+  this.title = 'Welcome stranger';
   this.render();
 }
 
