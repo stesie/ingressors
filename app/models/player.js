@@ -49,8 +49,13 @@ Object.defineProperty(Player.prototype, 'pictureUrl', {
 
 // public instance methods
 Player.prototype.save = function(callback) {
+  var that = this;
   this._node.save(function(err) {
-    callback(err);
+    if(err || that.nickName === undefined) { return callback(err); }
+
+    that._node.index('players', 'nickname', that.nickName.toLowerCase(), function(err) {
+      callback(err);
+    });
   });
 };
 
@@ -59,6 +64,12 @@ Player.prototype.del = function(callback) {
     callback(err);
   });
 };
+
+Player.prototype.poke = function(toPoke, callback) {
+  this._node.createRelationshipTo(toPoke._node, 'pokes', { }, function(err) {
+    callback(err);
+  });
+}
 
 
 // public static methods
@@ -77,6 +88,25 @@ Player.findByProfileId = function(profileId, callback) {
     callback(null, new Player(res));
   });
 };
+
+Player.findByNickName = function(nickName, callback) {
+  db.getIndexedNode('players', 'nickname', nickName, function(err, res) {
+    if(err || res === null) { return callback(err, null); }
+    callback(null, new Player(res));
+  });
+};
+
+
+Player.search = function(query, callback) {
+  db.queryNodeIndex('players', query, function(err, result) {
+    if(err || result.length === 0) { return callback(err, result); }
+
+    callback(null, result.map(function(node) {
+      return new Player(node);
+    }));
+  });
+};
+
 
 Player.create = function(data, callback) {
   var node = db.createNode(data);

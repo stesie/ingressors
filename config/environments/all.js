@@ -36,6 +36,8 @@ module.exports = function() {
   this.use(passport.initialize());
   this.use(passport.session());
 
+  this.use(require('connect-flash')());
+
   this.use(require('express-ejs-layouts'));
   this.dynamicHelpers(require('../../lib/helpers').dynamic);
 
