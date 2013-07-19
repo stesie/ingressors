@@ -71,6 +71,17 @@ Player.prototype.poke = function(toPoke, callback) {
   });
 }
 
+Player.prototype.getRelationshipPlayers = function(type, direction, callback) {
+  this._node.getRelationshipNodes({ type: type, direction: direction }, function(err, data) {
+    console.log("relationship lookup result", err, data);
+    if(err) { return callback(err, null); }
+
+    callback(null, data.map(function(node) {
+      return new Player(node);
+    }));
+  });
+}
+
 
 // public static methods
 Player.findByProfileId = function(profileId, callback) {

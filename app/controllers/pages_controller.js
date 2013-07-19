@@ -9,7 +9,14 @@ PagesController.main = function() {
   }
 
   this.title = 'Welcome back, ingressor!';
-  this.render();
+
+  var that = this;
+  this.req.user.getRelationshipPlayers('pokes', 'in', function(err, pokes) {
+    if(err) { that.req.flash('error', 'An error occurred while looking up incoming pokes.'); }
+
+    that.pokes = pokes;
+    that.render();
+  });
 }
 
 PagesController.welcome = function() {

@@ -13,8 +13,25 @@
   </div>
 <% } %>
 
+<% if(pokes && pokes.length) { %>
+  <div class="alert">
+    <p>
+      <strong>You've been poked by fellow agents</strong>, please either accept or reject their request,
+      depending on whether you trust them or not.
+    </p>
 
-<div class="alert alert-success">
+    <ul>
+      <% for(var i in pokes) { %>
+        <% var poke = pokes[i]; %>
+        <li>
+          <%= poke.nickName %>
+        </li>
+      <% } %>
+    </ul>
+  </div>      
+<% } %>
+
+<div class="well">
   <p>
     <strong>Poke someone</strong>, to ask another agent to assure your identity.
   </p>
@@ -25,3 +42,4 @@
     <button type="submit" class="btn">Submit</button>
   </form>
 </div>
+
