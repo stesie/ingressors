@@ -110,15 +110,17 @@ Player.prototype._updatePoke = function(poker, data, callback) {
 }
 
 
-Player.prototype.getRelationshipPlayers = function(type, direction, callback) {
-  this._node.getRelationshipNodes({ type: type, direction: direction }, function(err, data) {
-    if(err) { return callback(err, null); }
+Player.prototype.getIncomingPokes = function(callback) {
+    db.query("START a = node({player}) MATCH a-[m :pokes]->b WHERE m.rejected? = 0 RETURN b;",
+	     { player: this.id },
+	     function(err, result) {
+	       if(err || result.length === 0) { return callback(err, result); }
 
-    callback(null, data.map(function(node) {
-      return new Player(node);
-    }));
-  });
-}
+	       return callback(null, result.map(function(row) {
+		 return new Player(row.b);
+	       }));
+	     });
+};
 
 
 // public static methods

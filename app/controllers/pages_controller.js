@@ -11,8 +11,11 @@ PagesController.main = function() {
   this.title = 'Welcome back, ingressor!';
 
   var that = this;
-  this.req.user.getRelationshipPlayers('pokes', 'in', function(err, pokes) {
-    if(err) { that.req.flash('error', 'An error occurred while looking up incoming pokes.'); }
+  this.req.user.getIncomingPokes(function(err, pokes) {
+    if(err) {
+      console.log(err);
+      that.req.flash('error', 'An error occurred while looking up incoming pokes.');
+    }
 
     that.pokes = pokes;
     that.render();
