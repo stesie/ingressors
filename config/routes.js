@@ -18,6 +18,8 @@ module.exports = function routes() {
   this.match('/player/pokereply', 'player#pokereply', { via: 'POST' });
   this.match('/player/trusts', 'player#trusts');
   this.match('/player/trusts/revoke', 'player#revoketrust', { via: 'POST' });
+  this.match('/player/trusted', 'player#trusted');
+  this.match('/player/trust', 'player#trust', { via: 'POST' });
 
   this.match('/auth/google',
 	     passport.authenticate('google', {

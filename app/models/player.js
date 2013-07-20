@@ -135,6 +135,18 @@ Player.prototype.getIncomingPokes = function(callback) {
 	     });
 };
 
+Player.prototype.getIncomingTrusts = function(callback) {
+    db.query("START a = node({player}) MATCH b-[]->a RETURN b;",
+	     { player: this.id },
+	     function(err, result) {
+	       if(err || result.length === 0) { return callback(err, result); }
+
+	       return callback(null, result.map(function(row) {
+		 return new Player(row.b);
+	       }));
+	     });
+};
+
 Player.prototype.getOutgoingTrusts = function(callback) {
     db.query("START a = node({player}) MATCH a-[]->b RETURN b;",
 	     { player: this.id },

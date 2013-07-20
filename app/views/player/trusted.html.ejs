@@ -1,0 +1,30 @@
+<% if(trusts && trusts.length) { %>
+  <h3>You're currently being trusted by these fellow agents</h3>
+
+  <form method="post" action="<%= urlFor({ controller: "player", action: "trust" }) %>">
+    <input type="hidden" name="_csrf" value="<%= csrf %>" />
+    <table class="table table-striped">
+      <colgroup>
+	<col width="57px" />
+	<col />
+      </colgroup>
+
+      <tbody>
+	<% for(var i in trusts) { %>
+          <% var trust = trusts[i]; %>
+          <tr>
+	    <td>
+	      <img class="avatar-image" src="<%= trust.pictureUrl %>" alt="<%= trust.displayName %>" />
+	    </td>
+
+	    <td>
+	      <strong><%= trust.nickName %></strong><br />
+	      <%= trust.displayName %>
+	    </td>
+          </tr>
+	<% } %>
+      </tbody>
+    </table>
+  </form>
+<% } %>
+

@@ -195,5 +195,58 @@ PagesController.revoketrust = function() {
 };
 
 
+PagesController.before('trusted', filters.isAuth);
+PagesController.trusted = function() {
+  var that = this;
+  this.req.user.getIncomingTrusts(function(err, trusts) {
+    if(err) {
+      console.log(err);
+      that.req.flash('error', 'An error occurred while looking up trust information.');
+    }
+
+    that.title = 'Trusting players';
+    that.trusts = trusts;
+    that.render();
+  });
+};
+
+
+PagesController.before('trust', filters.isAuth);
+PagesController.trust = function() {
+  var err = null, that = this;
+  var nickname = this.req.body.nickname;
+
+  if(nickname === '') {
+    this.req.flash('error', 'Nickname cannot be empty');
+    this.redirect('/');
+    return;
+  }
+
+  Player.findByNickName(nickname, function(err, trustee) {
+    if(err) {
+      that.req.flash('error', 'No agent known with that nickname');
+      that.redirect('/');
+      return;
+    }
+
+    if(that.req.user.id === trustee.id) {
+      that.req.flash('error', 'You cannot trust yourself, at least not here!');
+      that.redirect('/');
+      return;
+    }
+
+    that.req.user.trust(trustee, function(err) {
+      if(err) {
+	console.log(err);
+	that.req.flash('error', 'Unable to store poke reply');
+      } else {
+	that.req.flash('info', 'Player trusted successfully');
+      }
+
+      that.redirect('/');
+    });
+  });
+};
+
 
 module.exports = PagesController;
