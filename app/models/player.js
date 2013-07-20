@@ -71,7 +71,7 @@ Player.prototype._addRelationship = function(target, type, data, callback) {
     if(err) { return callback(err, null); }
     if(path && path.length !== 0) { return callback(new Error('relationship exists already'), null); }
 
-    return that._node.createRelationshipTo(target._node, 'pokes', { }, function(err) {
+    return that._node.createRelationshipTo(target._node, type, data, function(err) {
       callback(err);
     });
   });
@@ -82,7 +82,7 @@ Player.prototype.poke = function(toPoke, callback) {
 };
 
 Player.prototype.trust = function(toTrust, callback) {
-  return this._addRelationship(toPoke, 'trusts', { }, callback);
+  return this._addRelationship(toTrust, 'trusts', { }, callback);
 };
 
 Player.prototype.delPoke = function(poker, callback) {
