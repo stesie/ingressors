@@ -111,7 +111,7 @@ Player.prototype._updatePoke = function(poker, data, callback) {
 
 
 Player.prototype.getIncomingPokes = function(callback) {
-    db.query("START a = node({player}) MATCH a-[m :pokes]->b WHERE m.rejected? = 0 RETURN b;",
+    db.query("START a = node({player}) MATCH b-[m :pokes]->a WHERE m.rejected? = 0 RETURN b;",
 	     { player: this.id },
 	     function(err, result) {
 	       if(err || result.length === 0) { return callback(err, result); }
