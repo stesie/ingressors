@@ -13,17 +13,7 @@
   </div>
 <% } %>
 
-<div class="well">
-  <p>
-    <strong>Poke someone</strong>, to ask another agent to assure your identity.
-  </p>
-
-  <form class="form-inline" method="post" action="<%= urlFor({ controller: "player", action: "poke" }) %>" autocomplete="off">
-    <input type="hidden" name="_csrf" value="<%= csrf %>" />
-    <input type="text" id="poke-nickname" class="input-medium" name="nickname" placeholder="whom to poke">
-    <button type="submit" class="btn">Submit</button>
-  </form>
-</div>
+<% include ../includes/poke-someone %>
 
 <% if(pokes && pokes.length) { %>
   <h3>You've been poked by fellow agents</h3>
