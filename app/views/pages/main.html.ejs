@@ -13,24 +13,6 @@
   </div>
 <% } %>
 
-<% if(pokes && pokes.length) { %>
-  <div class="alert">
-    <p>
-      <strong>You've been poked by fellow agents</strong>, please either accept or reject their request,
-      depending on whether you trust them or not.
-    </p>
-
-    <ul>
-      <% for(var i in pokes) { %>
-        <% var poke = pokes[i]; %>
-        <li>
-          <%= poke.nickName %>
-        </li>
-      <% } %>
-    </ul>
-  </div>      
-<% } %>
-
 <div class="well">
   <p>
     <strong>Poke someone</strong>, to ask another agent to assure your identity.
@@ -42,4 +24,44 @@
     <button type="submit" class="btn">Submit</button>
   </form>
 </div>
+
+<% if(pokes && pokes.length) { %>
+  <h3>You've been poked by fellow agents</h3>
+
+  <form method="post" action="<%= urlFor({ controller: "player", action: "pokereply" }) %>">
+    <input type="hidden" name="_csrf" value="<%= csrf %>" />
+    <table class="table table-striped">
+      <colgroup>
+	<col width="57px" />
+	<col />
+	<col width="50px" />
+	<col width="50px" />
+      </colgroup>
+
+      <tbody>
+	<% for(var i in pokes) { %>
+          <% var poke = pokes[i]; %>
+          <tr>
+	    <td>
+	      <img class="avatar-image" src="<%= poke.pictureUrl %>" alt="<%= poke.displayName %>" />
+	    </td>
+
+	    <td>
+	      <strong><%= poke.nickName %></strong><br />
+	      <%= poke.displayName %>
+	    </td>
+
+	    <td>
+	      <button type="submit" class="btn btn-success" name="accept" value="<%= poke.nickName %>">Accept</button>
+	    </td>
+
+	    <td>
+	      <button type="submit" class="btn btn-danger" name="reject" value="<%= poke.nickName %>">Reject</button>
+	    </td>
+          </tr>
+	<% } %>
+      </tbody>
+    </table>
+  </form>
+<% } %>
 

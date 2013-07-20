@@ -15,6 +15,7 @@ module.exports = function routes() {
   this.match('/player/nickname', 'player#nickname', { via: 'POST' });
   this.match('/player/nicksearch', 'player#nicksearch');
   this.match('/player/poke', 'player#poke', { via: 'POST' });
+  this.match('/player/pokereply', 'player#pokereply', { via: 'POST' });
 
   this.match('/auth/google',
 	     passport.authenticate('google', {

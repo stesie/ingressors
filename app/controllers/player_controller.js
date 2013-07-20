@@ -93,4 +93,57 @@ PagesController.poke = function() {
   });
 };
 
+
+PagesController.before('pokereply', filters.isAuth);
+PagesController.pokereply = function() {
+  var err = null, that = this;
+
+  if(this.req.body.accept !== undefined && this.req.body.reject !== undefined) {
+    this.req.flash('error', 'Cannot simultaneosly accept and reject a request');
+    this.redirect('/');
+    return;
+  }
+
+  var mode = (this.req.body.accept !== undefined) ? 'accept' : 'reject';
+  var nickname = this.req.body[mode];
+
+  Player.findByNickName(nickname, function(err, poker) {
+    if(err) {
+      that.req.flash('error', 'No agent known with that nickname');
+      that.redirect('/');
+      return;
+    }
+
+    if(that.req.user.id === poker.id) {
+      that.req.flash('error', 'You cannot reply to yourself!');
+      that.redirect('/');
+      return;
+    }
+
+    if(mode === 'accept') {
+      that.req.user.trust(poker, function(err) {
+	if(err) {
+	  that.req.flash('error', 'Unable to store poke reply');
+	} else {
+	  that.req.flash('info', 'Player trusted successfully');
+	}
+
+	that.redirect('/');
+      });
+    } else {
+      that.req.user.rejectPoke(poker, function(err) {
+	if(err) {
+	  that.req.flash('error', 'Unable to reject poke');
+	} else {
+	  that.req.flash('info', 'Poke rejected successfully');
+	}
+
+	that.redirect('/');
+      });
+    }
+  });
+};
+
+
+
 module.exports = PagesController;

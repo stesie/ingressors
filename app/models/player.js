@@ -69,11 +69,49 @@ Player.prototype.poke = function(toPoke, callback) {
   this._node.createRelationshipTo(toPoke._node, 'pokes', { }, function(err) {
     callback(err);
   });
+};
+
+Player.prototype.trust = function(toTrust, callback) {
+  var that = this;
+  this._node.createRelationshipTo(toTrust._node, 'trusts', { }, function(err) {
+    if(err) { return callback(err); }
+    return that.delPoke(toTrust, callback);
+  });
+};
+
+Player.prototype.delPoke = function(poker, callback) {
+  this._node.path(poker._node, "pokes", "all", 1, "shortestPath", function(err, path) {
+    if(err || path.length !== 1) { return callback(err); }
+    return path.relationships[0].del(callback);
+  });
+};
+
+Player.prototype.rejectPoke = function(poker, callback) {
+  return this._updatePoke(poker, { rejected: 1 }, callback);
+};
+
+Player.prototype._updatePoke = function(poker, data, callback) {
+  this._node.path(poker._node, "pokes", "all", 1, "shortestPath", function(err, path) {
+    if(err || path.length !== 1) { return callback(err); }
+
+    var rel = path.relationships[0];
+    rel.data = rel.data || {};
+
+    for(var key in data) {
+      if(data.hasOwnProperty(key)) {
+	rel.data[key] = data[key];
+      }
+    }
+
+    rel.save(function(err) {
+      callback(err);
+    });
+  });
 }
+
 
 Player.prototype.getRelationshipPlayers = function(type, direction, callback) {
   this._node.getRelationshipNodes({ type: type, direction: direction }, function(err, data) {
-    console.log("relationship lookup result", err, data);
     if(err) { return callback(err, null); }
 
     callback(null, data.map(function(node) {
