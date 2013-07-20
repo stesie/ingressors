@@ -1,4 +1,4 @@
-$('#poke-nickname').typeahead({
+$('.complete-nickname').typeahead({
   minLength: 3,
   source: function(query, callback) {
     console.log(query);

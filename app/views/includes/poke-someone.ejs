@@ -5,7 +5,7 @@
 
   <form class="form-inline" method="post" action="<%= urlFor({ controller: "player", action: "poke" }) %>" autocomplete="off">
     <input type="hidden" name="_csrf" value="<%= csrf %>" />
-    <input type="text" id="poke-nickname" class="input-medium" name="nickname" placeholder="whom to poke">
+    <input type="text" class="complete-nickname" class="input-medium" name="nickname" placeholder="whom to poke">
     <button type="submit" class="btn">Submit</button>
   </form>
 </div>

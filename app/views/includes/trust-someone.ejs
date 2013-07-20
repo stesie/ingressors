@@ -1,0 +1,12 @@
+<div class="well">
+  <p>
+    <strong>Trust someone</strong>, to tell other agents, that you know about an agent's identity
+    and can assure that she is part of your faction.
+  </p>
+
+  <form class="form-inline" method="post" action="<%= urlFor({ controller: "player", action: "trust" }) %>" autocomplete="off">
+    <input type="hidden" name="_csrf" value="<%= csrf %>" />
+    <input type="text" class="complete-nickname" class="input-medium" name="nickname" placeholder="whom to trust">
+    <button type="submit" class="btn">Submit</button>
+  </form>
+</div>
