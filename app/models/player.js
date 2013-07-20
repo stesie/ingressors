@@ -65,18 +65,24 @@ Player.prototype.del = function(callback) {
   });
 };
 
-Player.prototype.poke = function(toPoke, callback) {
-  this._node.createRelationshipTo(toPoke._node, 'pokes', { }, function(err) {
-    callback(err);
+Player.prototype._addRelationship = function(target, type, data, callback) {
+  var that = this;
+  this._node.path(target._node, type, 'out', 1, 'shortestPath', function(err, path) {
+    if(err) { return callback(err, null); }
+    if(path && path.length !== 0) { return callback(new Error('relationship exists already'), null); }
+
+    return that._node.createRelationshipTo(target._node, 'pokes', { }, function(err) {
+      callback(err);
+    });
   });
+}
+
+Player.prototype.poke = function(toPoke, callback) {
+  return this._addRelationship(toPoke, 'pokes', { }, callback);
 };
 
 Player.prototype.trust = function(toTrust, callback) {
-  var that = this;
-  this._node.createRelationshipTo(toTrust._node, 'trusts', { }, function(err) {
-    if(err) { return callback(err); }
-    return that.delPoke(toTrust, callback);
-  });
+  return this._addRelationship(toPoke, 'trusts', { }, callback);
 };
 
 Player.prototype.delPoke = function(poker, callback) {
