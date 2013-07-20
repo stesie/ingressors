@@ -151,5 +151,49 @@ PagesController.pokereply = function() {
 };
 
 
+PagesController.before('trusts', filters.isAuth);
+PagesController.trusts = function() {
+  var that = this;
+  this.req.user.getOutgoingTrusts(function(err, trusts) {
+    if(err) {
+      console.log(err);
+      that.req.flash('error', 'An error occurred while looking up trust information.');
+    }
+
+    that.title = 'Trusted players';
+    that.trusts = trusts;
+    that.render();
+  });
+};
+
+
+PagesController.before('revoketrust', filters.isAuth);
+PagesController.revoketrust = function() {
+  var err = null, that = this;
+
+  var nickname = this.req.body.revoke;
+
+  Player.findByNickName(nickname, function(err, toRevoke) {
+    if(err) {
+      console.log(err);
+      that.req.flash('error', 'No agent known with that nickname');
+      that.redirect('/');
+      return;
+    }
+
+    that.req.user.delTrust(toRevoke, function(err) {
+      if(err) {
+	console.log(err);
+	that.req.flash('error', 'Unable to revoke trust');
+      } else {
+	that.req.flash('info', 'Trust successfully revoked');
+      }
+
+      that.redirect('/player/trusts');
+    });
+  });
+};
+
+
 
 module.exports = PagesController;

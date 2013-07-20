@@ -92,6 +92,13 @@ Player.prototype.delPoke = function(poker, callback) {
   });
 };
 
+Player.prototype.delTrust = function(trusted, callback) {
+  this._node.path(trusted._node, "trusts", "all", 1, "shortestPath", function(err, path) {
+    if(err || path.length !== 1) { return callback(err); }
+    return path.relationships[0].del(callback);
+  });
+};
+
 Player.prototype.rejectPoke = function(poker, callback) {
   return this._updatePoke(poker, { rejected: 1 }, callback);
 };
@@ -118,6 +125,18 @@ Player.prototype._updatePoke = function(poker, data, callback) {
 
 Player.prototype.getIncomingPokes = function(callback) {
     db.query("START a = node({player}) MATCH b-[m :pokes]->a WHERE m.rejected? = 0 RETURN b;",
+	     { player: this.id },
+	     function(err, result) {
+	       if(err || result.length === 0) { return callback(err, result); }
+
+	       return callback(null, result.map(function(row) {
+		 return new Player(row.b);
+	       }));
+	     });
+};
+
+Player.prototype.getOutgoingTrusts = function(callback) {
+    db.query("START a = node({player}) MATCH a-[]->b RETURN b;",
 	     { player: this.id },
 	     function(err, result) {
 	       if(err || result.length === 0) { return callback(err, result); }
