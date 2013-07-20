@@ -124,11 +124,17 @@ PagesController.pokereply = function() {
       that.req.user.trust(poker, function(err) {
 	if(err) {
 	  that.req.flash('error', 'Unable to store poke reply');
+	  that.redirect('/');
 	} else {
-	  that.req.flash('info', 'Player trusted successfully');
+	  poker.delPoke(that.req.user, function(err) {
+	    if(err) {
+	      that.req.flash('error', 'Unable to remove poke request');
+	    } else {
+	      that.req.flash('info', 'Player trusted successfully');
+	    }
+	    that.redirect('/');
+	  });
 	}
-
-	that.redirect('/');
       });
     } else {
       that.req.user.rejectPoke(poker, function(err) {
