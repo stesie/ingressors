@@ -90,25 +90,25 @@ Player.prototype.trust = function(toTrust, callback) {
 };
 
 Player.prototype.delPoke = function(poker, callback) {
-  this._node.path(poker._node, "pokes", "all", 1, "shortestPath", function(err, path) {
-    if(err || path.length !== 1) { return callback(err); }
+  this._node.path(poker._node, "pokes", "out", 1, "shortestPath", function(err, path) {
+    if(err || !path || path.length !== 1) { return callback(err); }
     return path.relationships[0].del(callback);
   });
 };
 
 Player.prototype.delTrust = function(trusted, callback) {
-  this._node.path(trusted._node, "trusts", "all", 1, "shortestPath", function(err, path) {
-    if(err || path.length !== 1) { return callback(err); }
+  this._node.path(trusted._node, "trusts", "out", 1, "shortestPath", function(err, path) {
+    if(err || !path || path.length !== 1) { return callback(err); }
     return path.relationships[0].del(callback);
   });
 };
 
 Player.prototype.rejectPoke = function(poker, callback) {
-  return this._updatePoke(poker, { rejected: 1 }, callback);
+  return poker._updatePoke(this, { rejected: 1 }, callback);
 };
 
 Player.prototype._updatePoke = function(poker, data, callback) {
-  this._node.path(poker._node, "pokes", "all", 1, "shortestPath", function(err, path) {
+  this._node.path(poker._node, "pokes", "out", 1, "shortestPath", function(err, path) {
     if(err || path.length !== 1) { return callback(err); }
 
     var rel = path.relationships[0];
