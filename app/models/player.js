@@ -191,7 +191,7 @@ Player.findByProfileId = function(profileId, callback) {
 };
 
 Player.findByNickName = function(nickName, callback) {
-  db.getIndexedNode('players', 'nickname', nickName, function(err, res) {
+  db.getIndexedNode('players', 'nickname', nickName.toLowerCase(), function(err, res) {
     if(err || res === null) { return callback(err, null); }
     callback(null, new Player(res));
   });
