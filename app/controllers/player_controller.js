@@ -249,4 +249,20 @@ PagesController.trust = function() {
 };
 
 
+PagesController.before('weboftrust', filters.isAuth);
+PagesController.weboftrust = function() {
+  var that = this;
+  this.req.user.getWebOfTrust(function(err, trusts) {
+    if(err) {
+      console.log(err);
+      that.req.flash('error', 'An error occurred while looking up trust information.');
+    }
+
+    that.title = 'Trusted players';
+    that.trusts = trusts;
+    that.render();
+  });
+};
+
+
 module.exports = PagesController;

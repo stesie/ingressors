@@ -122,41 +122,54 @@ Player.prototype._updatePoke = function(poker, data, callback) {
   });
 }
 
+Player.prototype._runCypherQuery = function(query, params, callback) {
+  params.player  = params.player || this.id;
+
+  db.query(query, params,
+	   function(err, result) {
+	     if(err || result.length === 0) { return callback(err, result); }
+
+	     return callback(null, result.map(function(row) {
+	       var player = new Player(row.b);
+	       player.num_trusts = row.num_trusts;
+	       return player;
+	     }));
+	   });
+};
 
 Player.prototype.getIncomingPokes = function(callback) {
-    db.query("START a = node({player}) MATCH b-[m :pokes]->a WHERE m.rejected? = 0 RETURN b;",
-	     { player: this.id },
-	     function(err, result) {
-	       if(err || result.length === 0) { return callback(err, result); }
-
-	       return callback(null, result.map(function(row) {
-		 return new Player(row.b);
-	       }));
-	     });
+  return this._runCypherQuery(
+    "START a = node({player}) MATCH b-[m :pokes]->a WHERE m.rejected? = 0 RETURN b;",
+    { },
+    callback
+  );
 };
 
 Player.prototype.getIncomingTrusts = function(callback) {
-    db.query("START a = node({player}) MATCH b-[:trusts]->a RETURN b;",
-	     { player: this.id },
-	     function(err, result) {
-	       if(err || result.length === 0) { return callback(err, result); }
+  return this._runCypherQuery(
+    "START a = node({player}) MATCH b-[:trusts]->a RETURN b;",
+    { },
+    callback
+  );
+};
 
-	       return callback(null, result.map(function(row) {
-		 return new Player(row.b);
-	       }));
-	     });
+Player.prototype.getWebOfTrust = function(callback) {
+  return this._runCypherQuery(
+    'START a = node({player}) \
+     MATCH p = a-[:trusts*]->b \
+     WITH b, last(rels(p)) AS last_rel, count(*) AS t \
+     RETURN b, count(*) AS num_trusts;',
+    { },
+    callback
+  );
 };
 
 Player.prototype.getOutgoingTrusts = function(callback) {
-    db.query("START a = node({player}) MATCH a-[:trusts]->b RETURN b;",
-	     { player: this.id },
-	     function(err, result) {
-	       if(err || result.length === 0) { return callback(err, result); }
-
-	       return callback(null, result.map(function(row) {
-		 return new Player(row.b);
-	       }));
-	     });
+  return this._runCypherQuery(
+    "START a = node({player}) MATCH a-[:trusts]->b RETURN b;",
+    { },
+    callback
+  );
 };
 
 

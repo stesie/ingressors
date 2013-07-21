@@ -20,6 +20,7 @@ module.exports = function routes() {
   this.match('/player/trusts/revoke', 'player#revoketrust', { via: 'POST' });
   this.match('/player/trusted', 'player#trusted');
   this.match('/player/trust', 'player#trust', { via: 'POST' });
+  this.match('/player/weboftrust', 'player#weboftrust');
 
   this.match('/auth/google',
 	     passport.authenticate('google', {

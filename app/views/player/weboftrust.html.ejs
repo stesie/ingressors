@@ -1,0 +1,36 @@
+<% if(trusts && trusts.length) { %>
+  <h3>Your current web of trust</h3>
+
+  <form method="post" action="<%= urlFor({ controller: "player", action: "trust" }) %>">
+    <input type="hidden" name="_csrf" value="<%= csrf %>" />
+    <table class="table table-striped">
+      <colgroup>
+	<col width="57px" />
+	<col />
+        <col width="75px" />
+      </colgroup>
+
+      <tbody>
+	<% for(var i in trusts) { %>
+          <% var trust = trusts[i]; %>
+          <tr>
+	    <td>
+	      <img class="avatar-image" src="<%= trust.pictureUrl %>" alt="<%= trust.displayName %>" />
+	    </td>
+
+	    <td>
+	      <strong><%= trust.nickName %></strong><br />
+	      <%= trust.displayName %>
+	    </td>
+
+            <td>
+              <span class="badge <%= trust.num_trusts === 1 ? "badge-warning" : "badge-success" %>">
+                <%= trust.num_trusts %>
+              </span>
+            </td>
+          </tr>
+	<% } %>
+      </tbody>
+    </table>
+  </form>
+<% } %>
