@@ -1,5 +1,5 @@
 <% if(trusts && trusts.length) { %>
-  <h3>You've already trusted these fellow agents</h3>
+  <h3>You trust these fellow agents</h3>
 
   <form method="post" action="<%= urlFor({ controller: "player", action: "revoketrust" }) %>">
     <input type="hidden" name="_csrf" value="<%= csrf %>" />
