@@ -62,6 +62,7 @@ PagesController.nicksearch = function() {
 PagesController.before('poke', filters.isAuth);
 PagesController.poke = function() {
   _playerAction.call(this, this.req.body.nickname, 'poke', {
+    existsMessage: 'There already is a poke request, no need to poke twice',
     failedMessage: 'Unable to store poke request',
     successMessage: 'Player poked successfully'
   });
@@ -115,9 +116,10 @@ function _playerAction(nickname, method, config) {
       return;
     }
 
-
     that.req.user[method](target, function(err) {
-      if(err) {
+      if(err && config.existsMessage && err.message === 'relationship exists already') {
+	that.req.flash('error', config.existsMessage);
+      } else if(err) {
 	console.log(err);
 	that.req.flash('error', config.failedMessage);
       } else {
@@ -133,6 +135,7 @@ function _playerAction(nickname, method, config) {
 PagesController.before('trust', filters.isAuth);
 PagesController.trust = function() {
   _playerAction.call(this, this.req.body.nickname, 'trust', {
+    existsMessage: 'You already trust that agent, how can you trust someone twice?',
     successMessage: 'Player trusted successfully',
     failedMessage: 'Unable to store trust record',
   });
