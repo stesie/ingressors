@@ -6,6 +6,7 @@
 
   <form class="form-inline" method="post" action="<%= urlFor({ controller: "player", action: "trust" }) %>" autocomplete="off">
     <input type="hidden" name="_csrf" value="<%= csrf %>" />
+    <input type="hidden" name="backurl" value="<%= urlFor({ controller: route.crontroller, action: route.action }) %>" />
     <input type="text" class="complete-nickname" class="input-medium" name="nickname" placeholder="whom to trust">
     <button type="submit" class="btn">Submit</button>
   </form>

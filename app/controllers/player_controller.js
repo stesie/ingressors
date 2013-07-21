@@ -65,30 +65,32 @@ PagesController.poke = function() {
 
   if(this.req.body.nickname === '') {
     this.req.flash('error', 'Nickname cannot be empty');
-    this.redirect('/');
+    this.redirect(this.req.body.backurl || '/');
     return;
   }
 
   Player.findByNickName(this.req.body.nickname, function(err, toPoke) {
     if(err) {
       that.req.flash('error', 'No agent known with that nickname');
-      that.redirect('/');
+      that.redirect(that.req.body.backurl || '/');
       return;
     }
 
     if(that.req.user.id === toPoke.id) {
       that.req.flash('error', 'It doesn\'t make much sense to poke yourself!');
-      that.redirect('/');
+      that.redirect(that.req.body.backurl || '/');
       return;
     }
 
     that.req.user.poke(toPoke, function(err) {
       if(err) {
+	console.log(err);
 	that.req.flash('error', 'Unable to store poke request');
       } else {
 	that.req.flash('info', 'Player poked successfully');
       }
-      that.redirect('/');
+
+      that.redirect(that.req.body.backurl || '/');
     });
   });
 };
@@ -218,20 +220,20 @@ PagesController.trust = function() {
 
   if(nickname === '') {
     this.req.flash('error', 'Nickname cannot be empty');
-    this.redirect('/');
+    this.redirect(this.req.body.backurl || '/');
     return;
   }
 
   Player.findByNickName(nickname, function(err, trustee) {
     if(err) {
       that.req.flash('error', 'No agent known with that nickname');
-      that.redirect('/');
+      that.redirect(that.req.body.backurl || '/');
       return;
     }
 
     if(that.req.user.id === trustee.id) {
       that.req.flash('error', 'You cannot trust yourself, at least not here!');
-      that.redirect('/');
+      that.redirect(that.req.body.backurl || '/');
       return;
     }
 
@@ -243,7 +245,7 @@ PagesController.trust = function() {
 	that.req.flash('info', 'Player trusted successfully');
       }
 
-      that.redirect('/');
+      that.redirect(that.req.body.backurl || '/');
     });
   });
 };
