@@ -82,7 +82,11 @@ Player.prototype.poke = function(toPoke, callback) {
 };
 
 Player.prototype.trust = function(toTrust, callback) {
-  return this._addRelationship(toTrust, 'trusts', { }, callback);
+  var that = this;
+  return this._addRelationship(toTrust, 'trusts', { }, function(err) {
+    if(err) { return callback(err); }
+    return toTrust.delPoke(that, callback);
+  });
 };
 
 Player.prototype.delPoke = function(poker, callback) {

@@ -61,44 +61,16 @@ PagesController.nicksearch = function() {
 
 PagesController.before('poke', filters.isAuth);
 PagesController.poke = function() {
-  var err = null, that = this;
-
-  if(this.req.body.nickname === '') {
-    this.req.flash('error', 'Nickname cannot be empty');
-    this.redirect(this.req.body.backurl || '/');
-    return;
-  }
-
-  Player.findByNickName(this.req.body.nickname, function(err, toPoke) {
-    if(err) {
-      that.req.flash('error', 'No agent known with that nickname');
-      that.redirect(that.req.body.backurl || '/');
-      return;
-    }
-
-    if(that.req.user.id === toPoke.id) {
-      that.req.flash('error', 'It doesn\'t make much sense to poke yourself!');
-      that.redirect(that.req.body.backurl || '/');
-      return;
-    }
-
-    that.req.user.poke(toPoke, function(err) {
-      if(err) {
-	console.log(err);
-	that.req.flash('error', 'Unable to store poke request');
-      } else {
-	that.req.flash('info', 'Player poked successfully');
-      }
-
-      that.redirect(that.req.body.backurl || '/');
-    });
+  _playerAction.call(this, this.req.body.nickname, 'poke', {
+    failedMessage: 'Unable to store poke request',
+    successMessage: 'Player poked successfully'
   });
 };
 
 
 PagesController.before('pokereply', filters.isAuth);
 PagesController.pokereply = function() {
-  var err = null, that = this;
+  var err = null, that = this, method, nickname;
 
   if(this.req.body.accept !== undefined && this.req.body.reject !== undefined) {
     this.req.flash('error', 'Cannot simultaneosly accept and reject a request');
@@ -106,51 +78,78 @@ PagesController.pokereply = function() {
     return;
   }
 
-  var mode = (this.req.body.accept !== undefined) ? 'accept' : 'reject';
-  var nickname = this.req.body[mode];
+  if(this.req.body.accept !== undefined) {
+    _playerAction.call(this, this.req.body.accept, 'trust', {
+      failedMessage: 'Unable to store poke reply',
+      successMessage: 'Player trusted successfully'
+    });
+  } else {
+    _playerAction.call(this, this.req.body.reject, 'rejectPoke', {
+      failedMessage: 'Unable to reject poke',
+      successMessage: 'Poke rejected successfully'
+    });
+  }
+};
 
-  Player.findByNickName(nickname, function(err, poker) {
+
+function _playerAction(nickname, method, config) {
+  var err = null, that = this;
+
+  if(nickname === '') {
+    this.req.flash('error', 'Nickname cannot be empty');
+    this.redirect(this.req.body.backurl || config.defaultBackUrl || '/');
+    return;
+  }
+
+  Player.findByNickName(nickname, function(err, target) {
     if(err) {
+      console.log(err);
       that.req.flash('error', 'No agent known with that nickname');
-      that.redirect('/');
+      that.redirect(that.req.body.backurl || config.defaultBackUrl || '/');
       return;
     }
 
-    if(that.req.user.id === poker.id) {
-      that.req.flash('error', 'You cannot reply to yourself!');
-      that.redirect('/');
+    if(that.req.user.id === target.id) {
+      that.req.flash('error', 'It does not make much sense to just play with yourself!');
+      that.redirect(that.req.body.backurl || config.defaultBackUrl || '/');
       return;
     }
 
-    if(mode === 'accept') {
-      that.req.user.trust(poker, function(err) {
-	if(err) {
-	  that.req.flash('error', 'Unable to store poke reply');
-	  that.redirect('/');
-	} else {
-	  poker.delPoke(that.req.user, function(err) {
-	    if(err) {
-	      that.req.flash('error', 'Unable to remove poke request');
-	    } else {
-	      that.req.flash('info', 'Player trusted successfully');
-	    }
-	    that.redirect('/');
-	  });
-	}
-      });
-    } else {
-      that.req.user.rejectPoke(poker, function(err) {
-	if(err) {
-	  that.req.flash('error', 'Unable to reject poke');
-	} else {
-	  that.req.flash('info', 'Poke rejected successfully');
-	}
 
-	that.redirect('/');
-      });
-    }
+    that.req.user[method](target, function(err) {
+      if(err) {
+	console.log(err);
+	that.req.flash('error', config.failedMessage);
+      } else {
+	that.req.flash('info', config.successMessage);
+      }
+
+      that.redirect(that.req.body.backurl || config.defaultBackUrl || '/');
+    });
+  });
+}
+
+
+PagesController.before('trust', filters.isAuth);
+PagesController.trust = function() {
+  _playerAction.call(this, this.req.body.nickname, 'trust', {
+    successMessage: 'Player trusted successfully',
+    failedMessage: 'Unable to store trust record',
   });
 };
+
+
+PagesController.before('revoketrust', filters.isAuth);
+PagesController.revoketrust = function() {
+  _playerAction.call(this, this.req.body.revoke, 'delTrust', {
+    defaultBackUrl: '/player/trusts',
+    successMessage: 'Trust successfully revoked',
+    failedMessage: 'Unable to revoke trust',
+  });
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 PagesController.before('trusts', filters.isAuth);
@@ -169,34 +168,6 @@ PagesController.trusts = function() {
 };
 
 
-PagesController.before('revoketrust', filters.isAuth);
-PagesController.revoketrust = function() {
-  var err = null, that = this;
-
-  var nickname = this.req.body.revoke;
-
-  Player.findByNickName(nickname, function(err, toRevoke) {
-    if(err) {
-      console.log(err);
-      that.req.flash('error', 'No agent known with that nickname');
-      that.redirect('/');
-      return;
-    }
-
-    that.req.user.delTrust(toRevoke, function(err) {
-      if(err) {
-	console.log(err);
-	that.req.flash('error', 'Unable to revoke trust');
-      } else {
-	that.req.flash('info', 'Trust successfully revoked');
-      }
-
-      that.redirect('/player/trusts');
-    });
-  });
-};
-
-
 PagesController.before('trusted', filters.isAuth);
 PagesController.trusted = function() {
   var that = this;
@@ -209,44 +180,6 @@ PagesController.trusted = function() {
     that.title = 'Trusting players';
     that.trusts = trusts;
     that.render();
-  });
-};
-
-
-PagesController.before('trust', filters.isAuth);
-PagesController.trust = function() {
-  var err = null, that = this;
-  var nickname = this.req.body.nickname;
-
-  if(nickname === '') {
-    this.req.flash('error', 'Nickname cannot be empty');
-    this.redirect(this.req.body.backurl || '/');
-    return;
-  }
-
-  Player.findByNickName(nickname, function(err, trustee) {
-    if(err) {
-      that.req.flash('error', 'No agent known with that nickname');
-      that.redirect(that.req.body.backurl || '/');
-      return;
-    }
-
-    if(that.req.user.id === trustee.id) {
-      that.req.flash('error', 'You cannot trust yourself, at least not here!');
-      that.redirect(that.req.body.backurl || '/');
-      return;
-    }
-
-    that.req.user.trust(trustee, function(err) {
-      if(err) {
-	console.log(err);
-	that.req.flash('error', 'Unable to store poke reply');
-      } else {
-	that.req.flash('info', 'Player trusted successfully');
-      }
-
-      that.redirect(that.req.body.backurl || '/');
-    });
   });
 };
 
